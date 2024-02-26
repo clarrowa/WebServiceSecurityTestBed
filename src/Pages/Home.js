@@ -8,20 +8,18 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 // Ready made react components from Polaris library
 import { Page, Layout } from '@shopify/polaris';
 
-function Admin() {
-    const navigate = useNavigate();
+function Home() {
 
     const { user, signOut } = useAuthenticator((context) => [context.user]);
 
     const logoutHandler = () => {
-        signOut(user);
-        navigate('/');
+      signOut(user);
     };
   
-    // Module returns Admin page component
+    // Module returns Login page components, a card for login fields
     return (
       <Page 
-      title='Admin'
+      title='Home'
       secondaryActions={[{content: 'Log Out', onAction: () => {logoutHandler()}}]}
       divider
       >
@@ -32,7 +30,7 @@ function Admin() {
         </Layout>
       </Page>
     );
-}
+  }
   
-// Exports custom admin component
-export default Admin;
+  // Exports custom home component
+  export default Home;

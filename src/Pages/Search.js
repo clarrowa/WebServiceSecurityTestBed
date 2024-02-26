@@ -2,18 +2,19 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Amplify Authenticator Hook
+import { useAuthenticator } from '@aws-amplify/ui-react';
+
 // Ready made react components from Polaris library
 import { Page, Layout } from '@shopify/polaris';
 
-// Utils
-import { logout } from '../Utils/utils';
-
 function Search() {
-
     const navigate = useNavigate();
 
+    const { user, signOut } = useAuthenticator((context) => [context.user]);
+
     const logoutHandler = () => {
-        //logout code, clear access token from utils
+        signOut(user);
         navigate('/');
     };
   
