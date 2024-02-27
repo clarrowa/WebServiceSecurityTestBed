@@ -1,7 +1,3 @@
-// Imports necessary components from main dependencies
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 // Amplify Authenticator Hook
 import { useAuthenticator } from '@aws-amplify/ui-react';
 
@@ -15,7 +11,7 @@ function Home() {
     const logoutHandler = () => {
       signOut(user);
     };
-  
+
     // Module returns Login page components, a card for login fields
     return (
       <Page 
