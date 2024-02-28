@@ -18,12 +18,12 @@ function Admin() {
 
     async function currentSession() {
       try {
-        const { accessToken, jwtToken } = (await fetchAuthSession()).tokens ?? {};
+        const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
         var groups = accessToken.payload['cognito:groups'];
           if (!groups || groups.toString() !== "Admin") {
             navigate('/');
         }
-        console.log(jwtToken);
+        console.log(`jwtToken: ${JSON.stringify(idToken)}`);
       } catch (err) {
         console.log(err);
       }

@@ -1,5 +1,7 @@
 // authToken = session.getIdToken().getJwtToken()
 
+// idToken is jwttoken https://docs.amplify.aws/javascript/build-a-backend/restapi/customize-authz/#pageMain
+
 //AXIOS FOR AJAX REQUESTS - with headers https://stackoverflow.com/questions/44617825/passing-headers-with-axios-post-request
 
 // function requestUnicorn(pickupLocation) {
@@ -29,3 +31,5 @@
 // PUT /putrecord/{recordid}/{userid}/{content}
 // DELETE /recordsbyuser/{userid}
 // GET /recordsbyuser/{userid}
+
+// https://stackoverflow.com/questions/59596722/aws-cognito-integration-with-a-beta-http-api-in-api-gateway - authorizer
