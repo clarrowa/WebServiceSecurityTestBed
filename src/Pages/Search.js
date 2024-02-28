@@ -24,10 +24,6 @@ function Search() {
       console.log('Updated Record');
     }
 
-    const deleteRecord = () => {
-      console.log('Delete Record');
-    }
-
     // Module returns Search page component
     return (
       <Page 
@@ -44,9 +40,6 @@ function Search() {
               <p>test</p>
             </LegacyCard>
             <LegacyCard title='Update Record' sectioned primaryFooterAction={{content: 'Run Update', onAction: () => {updateRecord()}}}>
-              <p>test</p>
-            </LegacyCard>
-            <LegacyCard title='Delete Record' sectioned primaryFooterAction={{content: 'Run Delete', onAction: () => {deleteRecord()}}}>
               <p>test</p>
             </LegacyCard>
           </Layout.Section>

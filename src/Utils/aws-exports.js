@@ -6,6 +6,9 @@ export const amplifyConfig = {
             userPoolClientId: '5t5jqvhob03ha245l9o4r6tbgm',
             region: 'us-east-1',
         }
+    },
+    api: {
+        invokeUrl: '',
     }
 }
 
