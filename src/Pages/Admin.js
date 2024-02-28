@@ -1,6 +1,7 @@
 // Imports necessary components from main dependencies
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Axios from 'axios';
 
 // Amplify
 import { fetchAuthSession } from "aws-amplify/auth";
@@ -8,6 +9,7 @@ import { fetchAuthSession } from "aws-amplify/auth";
 // Ready made react components from Polaris library
 import { Page, Layout, LegacyCard } from '@shopify/polaris';
 import { DropDownMenu } from '../Components/common';
+import { amplifyConfig } from '../Utils/aws-exports';
 
 function Admin() {
     const navigate = useNavigate();
@@ -23,13 +25,29 @@ function Admin() {
           if (!groups || groups.toString() !== "Admin") {
             navigate('/');
         }
-        console.log(`jwtToken: ${JSON.stringify(idToken)}`);
+        // console.log(`jwtToken: ${JSON.stringify(idToken)}`);
       } catch (err) {
         console.log(err);
       }
     }
 
+    // async function makeCall() {
+    //   try {
+    //     const { idToken } = (await fetchAuthSession()).tokens ?? {};
+    //     Axios.get( amplifyConfig.api.invokeUrl + '', {
+    //       headers: {
+    //         'Content-type' : 'application/json',
+    //         'Authorization': `${idToken}`,
+    //       }
+    //     }).then((response) => {console.log(response)});
+    //     console.log(`jwtToken: ${JSON.stringify(idToken)}`);
+    //   } catch (err) {
+    //     console.log(err);
+    //   }
+    // }
+
     const listUsers = () => {
+      // makeCall();
       
     }
 

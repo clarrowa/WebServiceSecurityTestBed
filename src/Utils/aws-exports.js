@@ -8,7 +8,7 @@ export const amplifyConfig = {
         }
     },
     api: {
-        invokeUrl: '',
+        invokeUrl: 'https://yuhg7ba4nk.execute-api.us-east-1.amazonaws.com',
     }
 }
 
