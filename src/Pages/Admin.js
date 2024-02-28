@@ -3,16 +3,14 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Amplify
-import { useAuthenticator } from '@aws-amplify/ui-react';
 import { fetchAuthSession } from "aws-amplify/auth";
 
 // Ready made react components from Polaris library
-import { Page, Layout } from '@shopify/polaris';
+import { Page, Layout, LegacyCard } from '@shopify/polaris';
+import { DropDownMenu } from '../Components/common';
 
 function Admin() {
     const navigate = useNavigate();
-
-    const { user, signOut } = useAuthenticator((context) => [context.user]);
 
     useEffect(() => {
       currentSession();
@@ -30,21 +28,48 @@ function Admin() {
       }
     }
 
-    const logoutHandler = () => {
-        signOut(user);
-        navigate('/');
-    };
+    const listUsers = () => {
+      
+    }
+
+    const refreshUsers = () => {
+      const users = listUsers();
+      console.log("Refreshed Users");
+    }
+
+    const getRecordsPerUser = () => {
+      console.log("Got User's Records");
+    }
+
+    const deleteRecordsPerUser = () => {
+      console.log("Deleted User's Records");
+    }
+
+    const deleteAllRecords = () => {
+      console.log('Deleted All Records');
+    }
   
     // Module returns Admin page component
     return (
       <Page 
       title='Admin'
-      secondaryActions={[{content: 'Log Out', onAction: () => {logoutHandler()}}]}
+      primaryAction={<DropDownMenu/>}
       divider
       >
       <Layout>
           <Layout.Section>
-            
+            <LegacyCard title='Users' sectioned primaryFooterAction={{content: 'Refresh', onAction: () => {refreshUsers()}}}>
+              <p>test</p>
+            </LegacyCard>
+            <LegacyCard title='Records per User' sectioned primaryFooterAction={{content: 'Get User Records', onAction: () => {getRecordsPerUser()}}}>
+              <p>test</p>
+            </LegacyCard>
+            <LegacyCard title='Delete User Records' sectioned primaryFooterAction={{content: 'Run Delete', onAction: () => {deleteRecordsPerUser()}}}>
+              <p>test</p>
+            </LegacyCard>
+            <LegacyCard title='Delete All Record' sectioned primaryFooterAction={{content: 'Run Delete', onAction: () => {deleteAllRecords()}}}>
+              <p>test</p>
+            </LegacyCard>
           </Layout.Section>
         </Layout>
       </Page>

@@ -1,27 +1,33 @@
-// Amplify Authenticator Hook
-import { useAuthenticator } from '@aws-amplify/ui-react';
-
 // Ready made react components from Polaris library
-import { Page, Layout } from '@shopify/polaris';
+import { Page, Layout, LegacyCard } from '@shopify/polaris';
+
+import { DropDownMenu } from '../Components/common';
 
 function Home() {
 
-    const { user, signOut } = useAuthenticator((context) => [context.user]);
+    const getUserProfile = () => {
 
-    const logoutHandler = () => {
-      signOut(user);
-    };
+    }
+
+    const updateUserProfile = () => {
+      console.log('Updated User Profile');
+    }
 
     // Module returns Login page components, a card for login fields
     return (
       <Page 
       title='Home'
-      secondaryActions={[{content: 'Log Out', onAction: () => {logoutHandler()}}]}
+      primaryAction={<DropDownMenu/>}
       divider
       >
       <Layout>
           <Layout.Section>
-            
+            <LegacyCard title='User Profile' sectioned>
+              <p>test</p>
+            </LegacyCard>
+            <LegacyCard title='Edit User Profile' sectioned primaryFooterAction={{content: 'Run Update', onAction: () => {updateUserProfile()}}}>
+              <p>test</p>
+            </LegacyCard>
           </Layout.Section>
         </Layout>
       </Page>
