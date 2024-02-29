@@ -1,37 +1,47 @@
-import Axios from 'axios';
+import { useState, useCallback } from 'react';
 
-// authToken = session.getIdToken().getJwtToken()
+// Amplify
+import { fetchAuthSession } from "aws-amplify/auth";
 
-// idToken is jwttoken https://docs.amplify.aws/javascript/build-a-backend/restapi/customize-authz/#pageMain
+import jQuery from 'jquery';
+import { amplifyConfig } from "./aws-exports";
 
-//AXIOS FOR AJAX REQUESTS - with headers https://stackoverflow.com/questions/44617825/passing-headers-with-axios-post-request
+async function createRecord(recordId, recordData) {
+    try {
+      const { idToken } = (await fetchAuthSession()).tokens ?? {};
 
-// function requestUnicorn(pickupLocation) {
-//     $.ajax({
-//         method: 'POST',
-//         url: _config.api.invokeUrl + '/ride',
-//         headers: {
-//             Authorization: authToken
-//         },
-//         data: JSON.stringify({
-//             PickupLocation: {
-//                 Latitude: pickupLocation.latitude,
-//                 Longitude: pickupLocation.longitude
-//             }
-//         }),
-//         contentType: 'application/json',
-//         success: completeRequest,
-//         error: function ajaxError(jqXHR, textStatus, errorThrown) {
-//             console.error('Error requesting ride: ', textStatus, ', Details: ', errorThrown);
-//             console.error('Response: ', jqXHR.responseText);
-//             alert('An error occured when requesting your unicorn:\n' + jqXHR.responseText);
-//         }
-//     });
-// }
+      jQuery.ajax({
+        method: 'POST',
+        url: amplifyConfig.api.invokeUrl + '/createrecord',
+        headers: {
+            Authorization: idToken
+        },
+        data: JSON.stringify({
+            Content: {
+                RecordId: recordId,
+                RecordData: recordData
+            }
+        }),
+        contentType: 'application/json',
+        success: completeReturn,
+        error: function ajaxError(jqXHR, textStatus, errorThrown) {
+            console.error('Error creating record: ', textStatus, ', Details: ', errorThrown);
+            console.error('Response: ', jqXHR.responseText);
+            alert('An error occured when creating record:\n' + jqXHR.responseText);
+        }
+        });
+    } catch (err) {
+      console.log(err);
+    }
+}
 
+function completeReturn(result) {
 
-// PUT /putrecord/{recordid}/{userid}/{content}
-// DELETE /recordsbyuser/{userid}
-// GET /recordsbyuser/{userid}
+    return (
+        result
+    );
+}
 
-// https://stackoverflow.com/questions/59596722/aws-cognito-integration-with-a-beta-http-api-in-api-gateway - authorizer
+export {
+    createRecord
+};

@@ -11,7 +11,7 @@
     "requestContext": {
         "authorizer": {
             "claims": {
-                "cognito:username": "the_username"
+                "email": "the_username@gmail.com"
             }
         }
     },

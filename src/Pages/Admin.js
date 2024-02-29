@@ -1,7 +1,6 @@
 // Imports necessary components from main dependencies
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Axios from 'axios';
 
 // Amplify
 import { fetchAuthSession } from "aws-amplify/auth";
@@ -9,7 +8,7 @@ import { fetchAuthSession } from "aws-amplify/auth";
 // Ready made react components from Polaris library
 import { Page, Layout, LegacyCard } from '@shopify/polaris';
 import { DropDownMenu } from '../Components/common';
-import { amplifyConfig } from '../Utils/aws-exports';
+import { createRecord } from '../Utils/api-calls';
 
 function Admin() {
     const navigate = useNavigate();
@@ -20,40 +19,24 @@ function Admin() {
 
     async function currentSession() {
       try {
-        const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
+        const { accessToken } = (await fetchAuthSession()).tokens ?? {};
         var groups = accessToken.payload['cognito:groups'];
           if (!groups || groups.toString() !== "Admin") {
             navigate('/');
         }
-        // console.log(`jwtToken: ${JSON.stringify(idToken)}`);
       } catch (err) {
         console.log(err);
       }
     }
 
-    // async function makeCall() {
-    //   try {
-    //     const { idToken } = (await fetchAuthSession()).tokens ?? {};
-    //     Axios.get( amplifyConfig.api.invokeUrl + '', {
-    //       headers: {
-    //         'Content-type' : 'application/json',
-    //         'Authorization': `${idToken}`,
-    //       }
-    //     }).then((response) => {console.log(response)});
-    //     console.log(`jwtToken: ${JSON.stringify(idToken)}`);
-    //   } catch (err) {
-    //     console.log(err);
-    //   }
-    // }
-
     const listUsers = () => {
-      // makeCall();
       
     }
 
     const refreshUsers = () => {
-      const users = listUsers();
+      let test = createRecord('record1', 'recorddata1');
       console.log("Refreshed Users");
+
     }
 
     const getRecordsPerUser = () => {
