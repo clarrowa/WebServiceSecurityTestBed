@@ -1,9 +1,10 @@
 // Imports necessary components from main dependencies
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import jQuery from 'jquery';
 
 // Amplify
-import { deleteUser, fetchAuthSession } from "aws-amplify/auth";
+import { fetchAuthSession } from "aws-amplify/auth";
 import { amplifyConfig } from '../Utils/aws-exports';
 
 // Ready made react components from Polaris library
@@ -16,7 +17,7 @@ function Admin() {
     const [users, setUsers] = useState('');
     const [user, setUser] = useState('');
     const [userDelete, setUserDelete] = useState('');
-    const [records, setRecords] = useState('');
+    const [getResponseData, setGetResponseData] = useState('');
 
     const [userErrorMessage, setUserErrorMessage] = useState('');
     const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
@@ -41,12 +42,8 @@ function Admin() {
       }
     }
 
-    const listUsers = () => {
-      
-    }
-
     const refreshUsers = () => {
-      console.log("Refreshed Users");
+      getActiveUsers();
 
     }
 
@@ -55,12 +52,13 @@ function Admin() {
         setUserErrorMessage('Input Required');
       } else {
         setUserErrorMessage('');
-
-        console.log(user);
+        getRecords(user)
+        setUser('');
       }
     }
 
     const deleteRecordsPerUser = () => {
+      // DELETE UserRecord
       if (!userDelete) {
         setDeleteErrorMessage('Input Required');
       } else {
@@ -71,11 +69,76 @@ function Admin() {
 
     const deleteAllRecords = () => {
       console.log('Deleted All Records');
+      //DELETE ALLRECORDS
     }
 
-    // GET UserRecord - with parameter
-    // DELETE UserRecord
-    // DELETE Records
+    async function getActiveUsers() {
+      try {
+        const { idToken } = (await fetchAuthSession()).tokens ?? {};
+  
+        jQuery.ajax({
+          method: 'GET',
+          url: amplifyConfig.api.invokeUrl + '/getactiveusers',
+          headers: {
+              Authorization: idToken
+          },
+          contentType: 'application/json',
+          success: completeGetUsers,
+          error: function ajaxError(jqXHR, textStatus, errorThrown) {
+              console.error('Error getting record: ', textStatus, ', Details: ', errorThrown);
+              console.error('Response: ', jqXHR.responseText);
+              alert('An error occured when getting records:\n' + jqXHR.responseText);
+          }
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    async function getRecords(user) {
+      try {
+        const { idToken } = (await fetchAuthSession()).tokens ?? {};
+  
+        jQuery.ajax({
+          method: 'POST',
+          url: amplifyConfig.api.invokeUrl + '/getrecords',
+          headers: {
+              Authorization: idToken
+          },
+          data: JSON.stringify({
+            Content: {
+              UserId: user,
+            }
+          }),
+          contentType: 'application/json',
+          success: completeGetReturn,
+          error: function ajaxError(jqXHR, textStatus, errorThrown) {
+              console.error('Error getting record: ', textStatus, ', Details: ', errorThrown);
+              console.error('Response: ', jqXHR.responseText);
+              alert('An error occured when getting records:\n' + jqXHR.responseText);
+          }
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    function completeGetReturn(result) {
+      return (
+          setGetResponseData(`${JSON.stringify(result.Data.Items)}`)
+      );
+    }
+
+    function completeGetUsers(result) {
+      let items = result.Data.Items; 
+      let users = [
+        ...new Set(items.map(user => user.UserId))
+      ];
+
+      return (
+          setUsers(`${JSON.stringify(users)}`)
+      );
+    }
   
     // Module returns Admin page component
     return (
@@ -86,8 +149,8 @@ function Admin() {
       >
       <Layout>
           <Layout.Section>
-            <LegacyCard title='Users' sectioned primaryFooterAction={{content: 'Refresh', onAction: () => {refreshUsers()}}} secondaryFooterActions={[{content: 'Delete All Records', onAction: () => {deleteAllRecords()}}]}>
-              <p>test</p>
+            <LegacyCard title='Users' sectioned primaryFooterAction={{content: 'Get Users', onAction: () => {refreshUsers()}}} secondaryFooterActions={[{content: 'Delete All Records', onAction: () => {deleteAllRecords()}}]}>
+              <p>{users}</p>
             </LegacyCard>
             <LegacyCard title='Records per User' sectioned primaryFooterAction={{content: 'Get User Records', onAction: () => {getRecordsPerUser()}}}>
               <FormLayout>
@@ -97,6 +160,7 @@ function Admin() {
                 onChange={handleUserChange}
                 />
                 <InlineError message={userErrorMessage} />
+                <p>{getResponseData}</p>
               </FormLayout>
             </LegacyCard>
             <LegacyCard title='Delete User Records' sectioned primaryFooterAction={{content: 'Run Delete', onAction: () => {deleteRecordsPerUser()}}}>

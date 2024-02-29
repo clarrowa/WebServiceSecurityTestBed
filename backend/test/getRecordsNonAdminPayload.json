@@ -1,0 +1,19 @@
+{
+    "path": "/getrecords",
+    "httpMethod": "POST",
+    "headers": {
+        "Accept": "*/*",
+        "Authorization": "eyJraWQiOiJLTzRVMWZs",
+        "content-type": "application/json; charset=UTF-8"
+    },
+    "queryStringParameters": null,
+    "pathParameters": null,
+    "requestContext": {
+        "authorizer": {
+            "claims": {
+                "email": "the_username@gmail.com"
+            }
+        }
+    },
+    "body": "{\"Content\":{\"UserId\":\"the_admin@gmail.com\"}}"
+}

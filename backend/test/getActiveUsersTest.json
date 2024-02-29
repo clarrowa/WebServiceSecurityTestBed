@@ -1,0 +1,19 @@
+{
+    "path": "/getactiveusers",
+    "httpMethod": "GET",
+    "headers": {
+        "Accept": "*/*",
+        "Authorization": "eyJraWQiOiJLTzRVMWZs",
+        "content-type": "application/json; charset=UTF-8"
+    },
+    "queryStringParameters": null,
+    "pathParameters": null,
+    "requestContext": {
+        "authorizer": {
+            "claims": {
+                "cognito:groups": "Admin",
+                "email": "the_username@gmail.com"
+            }
+        }
+    }
+}

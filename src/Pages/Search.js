@@ -12,12 +12,12 @@ import { DropDownMenu } from '../Components/common';
 
 function Search() {
 
-  const [records, setRecords] = useState('');
   const [recordId, setRecordId] = useState('');
   const [updateRecordId, setUpdateRecordId] = useState('');
   const [recordData, setRecordData] = useState('');
   const [updateRecordData, setUpdateRecordData] = useState('');
-  const [responseData, setResponseData] = useState('');
+  const [createResponseData, setCreateResponseData] = useState('');
+  const [getResponseData, setGetResponseData] = useState('');
 
   const [newRecordErrorMessage, setNewRecordErrorMessage] = useState('');
   const [updateRecordErrorMessage, setUpdateRecordErrorMessage] = useState('');
@@ -29,20 +29,11 @@ function Search() {
   const handleUpdateRecordDataChange = useCallback((value) => setUpdateRecordData(value), []);
 
   useEffect(() => {
-    if (responseData){
-      alert(responseData)
-      setResponseData('');
+    if (createResponseData){
+      alert(createResponseData)
+      setCreateResponseData('');
     }
   });
-
-    const getUserRecords = () => {
-
-    }
-
-    const refreshRecords = () => {
-      let userRecords = getUserRecords();
-      console.log('Refreshed');
-    }
 
     async function createRecord() {
       if (!recordId || !recordData) {
@@ -60,9 +51,9 @@ function Search() {
         setUpdateRecordErrorMessage('Inputs required');
       } else {
         setUpdateRecordErrorMessage('');
-        console.log('Updated Record');
-        setRecordId('');
-        setRecordData('');
+        putRecord(updateRecordId, updateRecordData);
+        setUpdateRecordId('');
+        setUpdateRecordData('');
       }
     }
 
@@ -83,7 +74,7 @@ function Search() {
               }
           }),
           contentType: 'application/json',
-          success: completeReturn,
+          success: completeCreateReturn,
           error: function ajaxError(jqXHR, textStatus, errorThrown) {
               console.error('Error creating record: ', textStatus, ', Details: ', errorThrown);
               console.error('Response: ', jqXHR.responseText);
@@ -94,16 +85,44 @@ function Search() {
         console.log(err);
       }
   }
+
+  async function getRecords() {
+    try {
+      const { idToken } = (await fetchAuthSession()).tokens ?? {};
+
+      jQuery.ajax({
+        method: 'POST',
+        url: amplifyConfig.api.invokeUrl + '/getrecords',
+        headers: {
+            Authorization: idToken
+        },
+        data: JSON.stringify({
+          Content: {}
+        }),
+        contentType: 'application/json',
+        success: completeGetReturn,
+        error: function ajaxError(jqXHR, textStatus, errorThrown) {
+            console.error('Error getting record: ', textStatus, ', Details: ', errorThrown);
+            console.error('Response: ', jqXHR.responseText);
+            alert('An error occured when getting records:\n' + jqXHR.responseText);
+        }
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  }
   
-  function completeReturn(result) {
+  function completeCreateReturn(result) {
       return (
-          setResponseData(`Successful API Call, Response: ${JSON.stringify(result)}`)
+          setCreateResponseData(`Successful API Call, Response: ${JSON.stringify(result)}`)
       );
   }
 
-  // POST UpdateRecord - is also update
-  // GET UserRecord
-
+  function completeGetReturn(result) {
+    return (
+        setGetResponseData(`${JSON.stringify(result.Data.Items)}`)
+    );
+  }
 
     // Module returns Search page component
     return (
@@ -114,8 +133,8 @@ function Search() {
       >
       <Layout>
           <Layout.Section>
-            <LegacyCard title='Records' sectioned primaryFooterAction={{content: 'Refresh', onAction: () => {refreshRecords()}}} disa>
-              <p>test</p>
+            <LegacyCard title='Records' sectioned primaryFooterAction={{content: 'Refresh', onAction: () => {getRecords()}}} disa>
+              <p>{getResponseData}</p>
             </LegacyCard>
             <LegacyCard title='Create Record' sectioned primaryFooterAction={{content: 'Run Create', onAction: () => {createRecord()}}}>
               <FormLayout>

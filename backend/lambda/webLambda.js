@@ -14,6 +14,9 @@ exports.handler = (event, context, callback) => {
     // included in the authentication token are provided in the request context.
     // This includes the username as well as other attributes.
     const username = event.requestContext.authorizer.claims['email'];
+    const auth = event.requestContext.authorizer.claims['cognito:groups'];
+    
+    console.log('Authorization: ' + JSON.stringify(event.requestContext.authorizer));
 
     try {
       switch (event.path) {
@@ -40,8 +43,62 @@ exports.handler = (event, context, callback) => {
           });
           break;
         case "/getrecords":
-          
-          //if admin allow user param
+          if (auth === 'Admin') {
+            //if admin allow user param
+            const requestBody = JSON.parse(event.body);
+            const userId = requestBody.Content.UserId;
+
+            getRecords(username, userId, auth).then((data) => {
+              callback(null, {
+                statusCode: 201,
+                body: JSON.stringify({
+                  UserId: username,
+                  RequestedId: userId,
+                  Data: data,
+                }),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                },
+              });
+            }).catch((err) => {
+              console.error(err);
+              errorResponse(err.message, context.awsRequestId, callback)
+            });
+          } else {
+            getRecords(username, '', auth).then((data) => {
+              callback(null, {
+                statusCode: 201,
+                body: JSON.stringify({
+                  UserId: username,
+                  Data: data,
+                }),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                },
+              });
+            }).catch((err) => {
+              console.error(err);
+              errorResponse(err.message, context.awsRequestId, callback)
+            });
+          }
+          break;
+        case "/getactiveusers":
+          if (auth === 'Admin') {
+            getActiveUsers().then((data) => {
+              callback(null, {
+                statusCode: 201,
+                body: JSON.stringify({
+                  Data: data,
+                }),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                },
+              });
+            }).catch((err) => {
+              console.error(err);
+              errorResponse(err.message, context.awsRequestId, callback)
+            });
+          }
           break;
         case "/deleterecords":
           
@@ -66,6 +123,35 @@ function createRecord(recordId, username, recordData) {
             RequestTime: new Date().toISOString(),
         },
     }).promise();
+}
+
+function getRecords(username, userId, auth) {
+  if (auth === 'Admin' && userId) {
+    return ddb.query({
+      TableName: 'Records',
+      IndexName: 'UserId',
+      KeyConditionExpression: 'UserId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId
+      }
+    }).promise();
+  } else {
+    return ddb.query({
+      TableName: 'Records',
+      IndexName: 'UserId',
+      KeyConditionExpression: 'UserId = :username',
+      ExpressionAttributeValues: {
+        ':username': username
+      }
+    }).promise();
+  } 
+}
+
+function getActiveUsers() {
+  return ddb.scan({
+    TableName: 'Records',
+    ProjectionExpression: 'UserId',
+  }).promise();
 }
 
 function errorResponse(errorMessage, awsRequestId, callback) {
