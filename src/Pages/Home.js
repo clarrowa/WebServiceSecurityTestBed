@@ -25,9 +25,9 @@ function Home() {
             <LegacyCard title='User Profile' sectioned>
               <p>test</p>
             </LegacyCard>
-            <LegacyCard title='Edit User Profile' sectioned primaryFooterAction={{content: 'Run Update', onAction: () => {updateUserProfile()}}}>
+            {/* <LegacyCard title='Edit User Profile' sectioned primaryFooterAction={{content: 'Run Update', onAction: () => {updateUserProfile()}}}>
               <p>test</p>
-            </LegacyCard>
+            </LegacyCard> */}
           </Layout.Section>
         </Layout>
       </Page>
