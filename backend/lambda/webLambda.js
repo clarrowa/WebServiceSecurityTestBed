@@ -101,8 +101,30 @@ exports.handler = (event, context, callback) => {
           }
           break;
         case "/deleterecords":
-          
-          // check whats in body to determin if user specific
+          if (auth === 'Admin') {
+            const requestBody = JSON.parse(event.body);
+            const userId = requestBody.Content.UserId;
+            const recordId = requestBody.Content.RecordId;
+            
+            deleteRecord(userId, recordId).then((data) => {
+              callback(null, {
+                statusCode: 201,
+                body: JSON.stringify({
+                  Username: username,
+                  UserId: userId,
+                  Data: data
+                }),
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                },
+              });
+            }).catch((err) => {
+              console.error(err);
+              errorResponse(err.message, context.awsRequestId, callback)
+            });
+          } else {
+            throw new Error(`Unauthorized access attempt by: "${username}"`);
+          }
           break;
         default:
           throw new Error(`Misspelt route: "${event.path}"`);
@@ -153,6 +175,16 @@ function getActiveUsers() {
     ProjectionExpression: 'UserId',
   }).promise();
 }
+
+function deleteRecord(userId, recordId) {
+  return ddb.delete({
+    TableName: 'Records',
+    Key: {
+      RecordId: recordId,
+      UserId: userId
+    },
+  }).promise();
+} 
 
 function errorResponse(errorMessage, awsRequestId, callback) {
   callback(null, {

@@ -17,6 +17,7 @@ function Admin() {
     const [users, setUsers] = useState('');
     const [user, setUser] = useState('');
     const [userDelete, setUserDelete] = useState('');
+    const [recordDelete, setRecordDelete] = useState('');
     const [getResponseData, setGetResponseData] = useState('');
 
     const [userErrorMessage, setUserErrorMessage] = useState('');
@@ -25,6 +26,7 @@ function Admin() {
     // Handler functions for updating constant values
     const handleUserChange = useCallback((value) => setUser(value), []);
     const handleUserDeleteChange = useCallback((value) => setUserDelete(value), []);
+    const handleRecordDeleteChange = useCallback((value) => setRecordDelete(value), []);
 
     useEffect(() => {
       currentSession();
@@ -59,17 +61,14 @@ function Admin() {
 
     const deleteRecordsPerUser = () => {
       // DELETE UserRecord
-      if (!userDelete) {
+      if (!userDelete || !recordDelete) {
         setDeleteErrorMessage('Input Required');
       } else {
         setDeleteErrorMessage('');
-        console.log(userDelete);
+        deleteRecord(userDelete, recordDelete);
+        setUserDelete('');
+        setRecordDelete('');
       }
-    }
-
-    const deleteAllRecords = () => {
-      console.log('Deleted All Records');
-      //DELETE ALLRECORDS
     }
 
     async function getActiveUsers() {
@@ -123,6 +122,34 @@ function Admin() {
       }
     }
 
+    async function deleteRecord(userId, recordId) {
+      try {
+        const { idToken } = (await fetchAuthSession()).tokens ?? {};
+  
+        jQuery.ajax({
+          method: 'DELETE',
+          url: amplifyConfig.api.invokeUrl + '/deleterecords',
+          headers: {
+              Authorization: idToken
+          },
+          data: JSON.stringify({
+            Content: {
+              UserId: userId,
+              RecordId: recordId
+            }
+          }),
+          contentType: 'application/json',
+          error: function ajaxError(jqXHR, textStatus, errorThrown) {
+              console.error('Error getting record: ', textStatus, ', Details: ', errorThrown);
+              console.error('Response: ', jqXHR.responseText);
+              alert('An error occured when getting records:\n' + jqXHR.responseText);
+          }
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
     function completeGetReturn(result) {
       return (
           setGetResponseData(`${JSON.stringify(result.Data.Items)}`)
@@ -149,7 +176,7 @@ function Admin() {
       >
       <Layout>
           <Layout.Section>
-            <LegacyCard title='Users' sectioned primaryFooterAction={{content: 'Get Users', onAction: () => {refreshUsers()}}} secondaryFooterActions={[{content: 'Delete All Records', onAction: () => {deleteAllRecords()}}]}>
+            <LegacyCard title='Users' sectioned primaryFooterAction={{content: 'Get Users', onAction: () => {refreshUsers()}}}>
               <p>{users}</p>
             </LegacyCard>
             <LegacyCard title='Records per User' sectioned primaryFooterAction={{content: 'Get User Records', onAction: () => {getRecordsPerUser()}}}>
@@ -169,6 +196,11 @@ function Admin() {
                 value={userDelete}
                 placeholder='username@gmail.com'
                 onChange={handleUserDeleteChange}
+                />
+                <TextField
+                value={recordDelete}
+                placeholder='Record Id'
+                onChange={handleRecordDeleteChange}
                 />
                 <InlineError message={deleteErrorMessage} />
               </FormLayout>
