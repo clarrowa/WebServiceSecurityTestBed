@@ -1,6 +1,7 @@
+Request:
 {
-    "path": "/getactiveusers",
-    "httpMethod": "GET",
+    "path": "/getrecords",
+    "httpMethod": "POST",
     "headers": {
         "Accept": "*/*",
         "Authorization": "eyJraWQiOiJLTzRVMWZs",
@@ -11,9 +12,17 @@
     "requestContext": {
         "authorizer": {
             "claims": {
-                "cognito:groups": "Admin",
                 "email": "the_username@gmail.com"
             }
         }
     }
+}
+
+Success response:
+{
+  "statusCode": 201,
+  "body": "{\"UserId\":\"the_username@gmail.com\",\"Data\":{\"Items\":[],\"Count\":0,\"ScannedCount\":0}}",
+  "headers": {
+    "Access-Control-Allow-Origin": "*"
+  }
 }

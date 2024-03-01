@@ -1,3 +1,4 @@
+Request:
 {
     "path": "/deleterecords",
     "httpMethod": "DELETE",
@@ -17,4 +18,13 @@
         }
     },
     "body": "{\"Content\":{\"UserId\":\"the_username@gmail.com\",\"RecordId\":\"test\"}}"
+}
+
+Successful response:
+{
+  "statusCode": 201,
+  "body": "{\"Username\":\"the_admin@gmail.com\",\"UserId\":\"the_username@gmail.com\",\"Data\":{}}",
+  "headers": {
+    "Access-Control-Allow-Origin": "*"
+  }
 }

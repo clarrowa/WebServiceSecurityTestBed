@@ -1,0 +1,29 @@
+Request:
+{
+    "path": "/getactiveusers",
+    "httpMethod": "GET",
+    "headers": {
+        "Accept": "*/*",
+        "Authorization": "eyJraWQiOiJLTzRVMWZs",
+        "content-type": "application/json; charset=UTF-8"
+    },
+    "queryStringParameters": null,
+    "pathParameters": null,
+    "requestContext": {
+        "authorizer": {
+            "claims": {
+                "cognito:groups": "Admin",
+                "email": "the_username@gmail.com"
+            }
+        }
+    }
+}
+
+Success response:
+{
+  "statusCode": 201,
+  "body": "{\"Data\":{\"Items\":[{\"UserId\":\"user@gmail.com\"},{\"UserId\":\"user2@gmail.com\"},{\"UserId\":\"user3@gmail.com\"},{\"UserId\":\"user4@gmail.com\"},{\"UserId\":\"user5@gmail.com\"}],\"Count\":5,\"ScannedCount\":5}}",
+  "headers": {
+    "Access-Control-Allow-Origin": "*"
+  }
+}

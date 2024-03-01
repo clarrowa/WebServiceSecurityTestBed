@@ -1,5 +1,6 @@
+Request:
 {
-    "path": "/createrecord",
+    "path": "/getrecords",
     "httpMethod": "POST",
     "headers": {
         "Accept": "*/*",
@@ -15,5 +16,14 @@
             }
         }
     },
-    "body": "{\"Content\":{\"RecordId\":\"test\",\"RecordData\":\"test\"}}"
+    "body": "{\"Content\":{\"UserId\":\"the_admin@gmail.com\"}}"
+}
+
+Success response:
+{
+  "statusCode": 201,
+  "body": "{\"UserId\":\"the_username@gmail.com\",\"Data\":{\"Items\":[],\"Count\":0,\"ScannedCount\":0}}",
+  "headers": {
+    "Access-Control-Allow-Origin": "*"
+  }
 }
