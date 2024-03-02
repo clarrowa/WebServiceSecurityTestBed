@@ -1,22 +1,32 @@
+// Imports necessary components from main dependencies
+import { useState, useEffect } from 'react';
+
 // Ready made react components from Polaris library
 import { Page, Layout, LegacyCard } from '@shopify/polaris';
 
 import { DropDownMenu } from '../Components/common';
 
+// Amplify
 import { fetchAuthSession } from "aws-amplify/auth";
-import { useState, useEffect } from 'react';
+import { useAuthenticator } from '@aws-amplify/ui-react';
 
 function Home() {
 
-    const [user, setUser] = useState('');
+    const [userName, setUserName] = useState('');
+
+    const { user, signOut } = useAuthenticator((context) => [context.user]);
 
     useEffect(() => {
-      fetchUser();
+      fetchUserAndCheckAuth();
     });
 
-    async function fetchUser() {
-      const { idToken } = (await fetchAuthSession()).tokens ?? {};
-      setUser(idToken.payload.email);
+    async function fetchUserAndCheckAuth() {
+      const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
+      if (!accessToken) {
+        signOut(user);
+      } else {
+        setUserName(idToken.payload.email);
+      } 
     }
 
     // Module returns Login page components, a card for login fields
@@ -29,7 +39,7 @@ function Home() {
       <Layout>
           <Layout.Section>
             <LegacyCard title='User Profile' sectioned>
-              <p>{user}</p>
+              <p>{userName}</p>
             </LegacyCard>
           </Layout.Section>
         </Layout>

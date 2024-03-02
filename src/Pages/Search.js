@@ -5,6 +5,7 @@ import jQuery from 'jquery';
 // Amplify
 import { fetchAuthSession } from "aws-amplify/auth";
 import { amplifyConfig } from '../Utils/aws-exports';
+import { useAuthenticator } from '@aws-amplify/ui-react';
 
 // Ready made react components from Polaris library
 import { Page, Layout, LegacyCard, TextField, FormLayout, InlineError } from '@shopify/polaris';
@@ -28,12 +29,26 @@ function Search() {
   const handleRecordDataChange = useCallback((value) => setRecordData(value), []);
   const handleUpdateRecordDataChange = useCallback((value) => setUpdateRecordData(value), []);
 
+  const { user, signOut } = useAuthenticator((context) => [context.user]);
+
   useEffect(() => {
+    signOutNonAuth();
     if (createResponseData){
       alert(createResponseData)
       setCreateResponseData('');
     }
   });
+
+  async function signOutNonAuth() {
+    try {
+      const { accessToken } = (await fetchAuthSession()).tokens ?? {};
+      if (!accessToken) {
+        signOut(user);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
     async function createRecord() {
       if (!recordId || !recordData) {

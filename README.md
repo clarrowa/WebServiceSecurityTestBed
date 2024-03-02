@@ -16,11 +16,42 @@ Authentication is performed through the use of Amplify Authenticator in conjunct
 
 ## OWASP Vulnerabilities targeted in this project
 
-1.
+OWASP list: https://www.hacksplaining.com/owasp
 
-2.
+1. Broken Access Control - Users acting outside of their intended permissions. 
 
-3.
+2. Cryptographic Failures - Unprotected sensitive data that can be used credit card fraud, identity theft, or other crimes.
+
+3. Injection -  Untrusted data sent to an interpreter as part of a command or query that is then unintentionally executed.
+
+### Broken Access Control
+
+The type of access control most prevalent within this web application is vertical access control, mechanisms that restrict access to sensitive functionality to specific types of users, a regular user can not access the Admin page. If a user is able to then this is an example of vertical access escalation, a critical vulnerability if said Admin page facilitates delete actions.
+
+In this web application Cognito access tokens are utlilised in authentication and they are stored in local storage, users are authenticated on page render and navigated away from the Admin page if they are not sufficiently authorised. This is an example of Parameter-based access control, wherein access data is stored in a user accessible location, in this case local storage. Therefore there is a vulnerability, a user could change their parameter's in an attempt to access the Admin page.
+
+Access tokens are specific to individual users registered in Cognito, therefore even if a users was able to acquire an Admin token they will not be able to access they will not be able to bypass access control without both the username and the password, both of which are encrypted and hidden from the user via Amplify authenticator communicating with the Cognito userpool.
+
+The test case: can a user email gain admin access using an Admin token. To perform this test I will be utilising Burp suite, a freely available application for web application penetration testing, wherein I will be replacing a user access token returned by Cognito with an Admin authentication token. The user will be rejected and their access token(the false admin) will be revoked and they will be returned to the login page.
+
+Test execution is viewable in the OWASPBurpSuiteTests.mp4 at /owasp, wherein the user attempting to alter their access token is returned an error and subsequently logged out.
+
+Storing session tokens in local storage: https://portswigger.net/research/web-storage-the-lesser-evil-for-session-tokens
+https://portswigger.net/web-security/access-control#vertical-privilege-escalation
+
+### Cryptographic Failures
+
+The sensitive data specific to this web application are the user credentials stored in the Cognito userpool, obtaining a valid username is all that is required for an attacker to setup a specific brute force attack designed to gain access to the user account. 
+
+To protect this data one can implement functionality that obfuscates any API response that would disclose valid user data, in this instance a valid username. AWS Cognito provides such functionality, through the 'Prevent User existence' tag that has been applied to this web applications userpool. It is an option that can be set during the initial configuratio of a Cognito userpool and is set by default, when configuring Cognito in CDK using a IaC(Infrastructure as Code) model it is default to off, a security configuration that can be easy to miss. 
+
+Given this funtionality is implemented a brute force attack against the login attempting to validate a user input for further attacks should fail, this is the test case for this OWASP vulnerability. To perform this test I will be utilising Burp Suite, specifically following a variation of this tutorial: https://portswigger.net/support/using-burp-to-brute-force-a-login-page.
+
+Test execution is viewable in the OWASPBurpSuiteTests.mp4 at /owasp, wherein the proctection of data is displayed given the response returns 'Incorrect username or password' rather than 'Incorrect password' for the correct username user1@gmail.com.
+
+### Injection
+
+
 
 ## Frontend
 
