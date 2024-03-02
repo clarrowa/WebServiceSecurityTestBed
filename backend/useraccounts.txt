@@ -1,0 +1,15 @@
+Admin:
+    Username: the_admin@gmail.com
+    Password: AdminPassw0rd!
+
+User1:
+    Username: user1@gmail.com
+    Password: User1Passw0rd!
+
+User2:
+    Username: user2@gmail.com
+    Password: User2Passw0rd!
+
+User3:
+    Username: user3@gmail.com
+    Password: User3Passw0rd!
