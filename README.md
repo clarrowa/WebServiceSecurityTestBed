@@ -43,15 +43,28 @@ https://portswigger.net/web-security/access-control#vertical-privilege-escalatio
 
 The sensitive data specific to this web application are the user credentials stored in the Cognito userpool, obtaining a valid username is all that is required for an attacker to setup a specific brute force attack designed to gain access to the user account. 
 
-To protect this data one can implement functionality that obfuscates any API response that would disclose valid user data, in this instance a valid username. AWS Cognito provides such functionality, through the 'Prevent User existence' tag that has been applied to this web applications userpool. It is an option that can be set during the initial configuratio of a Cognito userpool and is set by default, when configuring Cognito in CDK using a IaC(Infrastructure as Code) model it is default to off, a security configuration that can be easy to miss. 
+To protect this data one can implement functionality that obfuscates any API response that would disclose valid user data, in this instance a valid username. AWS Cognito provides such functionality, through the 'Prevent User existence' tag that has been applied to this web applications userpool. It is an option that can be set during the initial configuratio of a Cognito userpool and is set by default, when configuring Cognito in CDK using a IaC(Infrastructure as Code) model it is default to off, a security configuration that can be easy to miss. Additionally the username data is encrypted, increasing the difficulty for attackers to set brute force attack inputs.
 
-Given this funtionality is implemented a brute force attack against the login attempting to validate a user input for further attacks should fail, this is the test case for this OWASP vulnerability. To perform this test I will be utilising Burp Suite, specifically following a variation of this tutorial: https://portswigger.net/support/using-burp-to-brute-force-a-login-page.
+Given this funtionality a brute force attack against the login attempting to validate a user input for further attacks should fail, this is the test case for this OWASP vulnerability. To perform this test I will be utilising Burp Suite, specifically following a variation of this tutorial: https://portswigger.net/support/using-burp-to-brute-force-a-login-page.
 
-Test execution is viewable in the OWASPBurpSuiteTests.mp4 at /owasp, wherein the proctection of data is displayed given the response returns 'Incorrect username or password' rather than 'Incorrect password' for the correct username user1@gmail.com.
+Test execution is viewable in the OWASPBurpSuiteTests.mp4 at /owasp, wherein the proctection of data is displayed given the response returns 'Incorrect username or password' rather than 'Incorrect password' for the correct encrypted username user1@gmail.com, this attack could be instantiate by increasing the number of encrypted usernames used in the brute force attack, only one is used as a server error is thrown if the backend waits too long for a request.
 
 ### Injection
 
+Injection is the process of sending specific data that can trick the interpreter into executing unintended / unauthorised commands, such as an SQL or NoSQL that appends the command to add values to a database(e.g. drop the table, etc). This full stack web application is theoretically not at risk of any SQL injection attacks, as SQL is not utilised and the NoSQL DynamoDB commands executed in the backend Lambda function are specific Document Client methods that abstract away the query and perform validation on query attributes. 
 
+One form of injection that this web application is potentially vulnerable to is direct client-side JSON injection, altering the request body of API calls to retrieve different results from the backend Lambda function. This vulnerability is most present around the /getrecords API call, given it is configured as a POST request and can be used to retrieve user data with the correct payload. This vulnerability is secured through the use of authorisation checks, only allowing registered Admin users to access user data other than their own.
+
+The test case for Injection is to test whether a non Admin user can access user data other than their own through the use of a body payload identical to the one sent by an Admin user from the admin page. I will be using Burp Suite to inject the JSON body into the getrecords request of a user as there is no input option for a regular user to make the call with a payload.
+
+Test execution is viewable in the OWASPBurpSuiteTests.mp4 at /owasp, wherein the updated JSON payload request of a non Admin user is unable to retrieve records other than their own due to their lack of authorisation, instead they are returned their own records as the included payload is not acted upon.
+
+Note this test is replicated in the Lambda tests themselves internally.
+
+User tries to get another users records by injecting different username into getRecords JSON post
+
+https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html
+https://portswigger.net/web-security/dom-based/client-side-json-injection
 
 ## Frontend
 
