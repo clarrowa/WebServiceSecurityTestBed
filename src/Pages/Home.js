@@ -6,27 +6,19 @@ import { Page, Layout, LegacyCard } from '@shopify/polaris';
 
 import { DropDownMenu } from '../Components/common';
 
-// Amplify
 import { fetchAuthSession } from "aws-amplify/auth";
-import { useAuthenticator } from '@aws-amplify/ui-react';
 
 function Home() {
 
-    const [userName, setUserName] = useState('');
-
-    const { user, signOut } = useAuthenticator((context) => [context.user]);
+    const [user, setUser] = useState('');
 
     useEffect(() => {
-      fetchUserAndCheckAuth();
+      fetchUser();
     });
 
-    async function fetchUserAndCheckAuth() {
-      const { accessToken, idToken } = (await fetchAuthSession()).tokens ?? {};
-      if (!accessToken) {
-        signOut(user);
-      } else {
-        setUserName(idToken.payload.email);
-      } 
+    async function fetchUser() {
+      const { idToken } = (await fetchAuthSession()).tokens ?? {};
+      setUser(idToken.payload.email);
     }
 
     // Module returns Login page components, a card for login fields
@@ -39,7 +31,7 @@ function Home() {
       <Layout>
           <Layout.Section>
             <LegacyCard title='User Profile' sectioned>
-              <p>{userName}</p>
+              <p>{user}</p>
             </LegacyCard>
           </Layout.Section>
         </Layout>

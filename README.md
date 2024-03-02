@@ -32,7 +32,7 @@ In this web application Cognito access tokens are utlilised in authentication an
 
 Access tokens are specific to individual users registered in Cognito, therefore even if a users was able to acquire an Admin token they will not be able to access they will not be able to bypass access control without both the username and the password, both of which are encrypted and hidden from the user via Amplify authenticator communicating with the Cognito userpool.
 
-The test case: can a user email gain admin access using an Admin token. To perform this test I will be utilising Burp suite, a freely available application for web application penetration testing, wherein I will be replacing a user access token returned by Cognito with an Admin authentication token. The user will be rejected and their access token(the false admin) will be revoked and they will be returned to the login page.
+The test case: can a user email gain admin access using an Admin token. To perform this test I will be utilising Burp suite, a freely available application for web application penetration testing, wherein I will be replacing a user access token returned by Cognito with an Admin authentication token. The user's false token will be revoked and they will be unable to access the Admin page as they will revert back to their assigned token.
 
 Test execution is viewable in the OWASPBurpSuiteTests.mp4 at /owasp, wherein the user attempting to alter their access token is returned an error and subsequently logged out.
 

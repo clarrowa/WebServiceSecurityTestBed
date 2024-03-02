@@ -6,7 +6,6 @@ import jQuery from 'jquery';
 // Amplify
 import { fetchAuthSession } from "aws-amplify/auth";
 import { amplifyConfig } from '../Utils/aws-exports';
-import { useAuthenticator } from '@aws-amplify/ui-react';
 
 // Ready made react components from Polaris library
 import { Page, Layout, LegacyCard, FormLayout, TextField, InlineError } from '@shopify/polaris';
@@ -16,7 +15,7 @@ function Admin() {
     const navigate = useNavigate();
 
     const [users, setUsers] = useState('');
-    const [userName, setUserName] = useState('');
+    const [user, setUser] = useState('');
     const [userDelete, setUserDelete] = useState('');
     const [recordDelete, setRecordDelete] = useState('');
     const [getResponseData, setGetResponseData] = useState('');
@@ -25,11 +24,9 @@ function Admin() {
     const [deleteErrorMessage, setDeleteErrorMessage] = useState('');
 
     // Handler functions for updating constant values
-    const handleUserChange = useCallback((value) => setUserName(value), []);
+    const handleUserChange = useCallback((value) => setUser(value), []);
     const handleUserDeleteChange = useCallback((value) => setUserDelete(value), []);
     const handleRecordDeleteChange = useCallback((value) => setRecordDelete(value), []);
-
-    const { user, signOut } = useAuthenticator((context) => [context.user]);
 
     useEffect(() => {
       currentSession();
@@ -38,13 +35,9 @@ function Admin() {
     async function currentSession() {
       try {
         const { accessToken } = (await fetchAuthSession()).tokens ?? {};
-        if (!accessToken) {
-          signOut(user);
-        } else {
-          var groups = accessToken.payload['cognito:groups'];
+        var groups = accessToken.payload['cognito:groups'];
           if (!groups || groups.toString() !== "Admin") {
             navigate('/');
-          }
         }
       } catch (err) {
         console.log(err);
@@ -61,8 +54,8 @@ function Admin() {
         setUserErrorMessage('Input Required');
       } else {
         setUserErrorMessage('');
-        getRecords(user);
-        setUserName('');
+        getRecords(user)
+        setUser('');
       }
     }
 
@@ -189,7 +182,7 @@ function Admin() {
             <LegacyCard title='Records per User' sectioned primaryFooterAction={{content: 'Get User Records', onAction: () => {getRecordsPerUser()}}}>
               <FormLayout>
                 <TextField
-                value={userName}
+                value={user}
                 placeholder='username@gmail.com'
                 onChange={handleUserChange}
                 />
